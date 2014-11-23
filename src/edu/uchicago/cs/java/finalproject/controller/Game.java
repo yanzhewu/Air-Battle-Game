@@ -40,6 +40,7 @@ public class Game implements Runnable, KeyListener {
 			LEFT = 37, // rotate left; left arrow
 			RIGHT = 39, // rotate right; right arrow
 			UP = 38, // thrust; up arrow
+            DOWN = 40,//opposite thrust; down arrow
 			START = 83, // s key
 			FIRE = 32, // space key
 			MUTE = 77, // m-key mute
@@ -122,7 +123,7 @@ public class Game implements Runnable, KeyListener {
 			//if the level is clear then spawn some big asteroids -- the number of asteroids 
 			//should increase with the level. 
 			checkNewLevel();
-
+            checkDebris();
 			try {
 				// The total amount of time is guaranteed to be at least ANI_DELAY long.  If processing (update) 
 				// between frames takes longer than ANI_DELAY, then the difference between lStartTime - 
@@ -136,6 +137,10 @@ public class Game implements Runnable, KeyListener {
 			}
 		} // end while
 	} // end run
+
+    private void checkDebris(){
+
+    }
 
 	private void checkCollisions() {
 
@@ -178,9 +183,14 @@ public class Game implements Runnable, KeyListener {
 							CommandCenter.spawnFalcon(false);
 							killFoe(movFoe);
 						}
+                        else{
+                            CommandCenter.setScore(CommandCenter.getScore() + 1);
+                            killFoe(movFoe);
+                        }
 					}
 					//not the falcon
 					else {
+                        CommandCenter.setScore(CommandCenter.getScore()+1);
 						tupMarkForRemovals.add(new Tuple(CommandCenter.movFriends, movFriend));
 						killFoe(movFoe);
 					}//end else 
@@ -207,12 +217,13 @@ public class Game implements Runnable, KeyListener {
 	
 				//detect collision
 				if (pntFalCenter.distance(pntFloaterCenter) < (nFalRadiux + nFloaterRadiux)) {
-	
-					
-					tupMarkForRemovals.add(new Tuple(CommandCenter.movFloaters, movFloater));
+                    if(movFloater instanceof NewShipFloater){
+                        CommandCenter.setNumFalcons(CommandCenter.getNumFalcons() + 1);
+                    }
+                    tupMarkForRemovals.add(new Tuple(CommandCenter.movFloaters, movFloater));
 					Sound.playSound("pacman_eatghost.wav");
-	
-				}//end if 
+				}
+		      //end if
 			}//end inner for
 		}//end if not null
 		
@@ -242,15 +253,23 @@ public class Game implements Runnable, KeyListener {
 				//spawn two medium Asteroids
 				tupMarkForAdds.add(new Tuple(CommandCenter.movFoes,new Asteroid(astExploded)));
 				tupMarkForAdds.add(new Tuple(CommandCenter.movFoes,new Asteroid(astExploded)));
-				
 			} 
 			//medium size aseroid exploded
-			else if(astExploded.getSize() == 1){
+			else{
+                if(astExploded.getSize() == 1){
 				//spawn three small Asteroids
 				tupMarkForAdds.add(new Tuple(CommandCenter.movFoes,new Asteroid(astExploded)));
 				tupMarkForAdds.add(new Tuple(CommandCenter.movFoes,new Asteroid(astExploded)));
 				tupMarkForAdds.add(new Tuple(CommandCenter.movFoes,new Asteroid(astExploded)));
-			}
+                }
+                else{
+                    int num = astExploded.getXcoords().length;
+                    for(int i=0;i<num-1;i++) {
+                        tupMarkForAdds.add(new Tuple(CommandCenter.movDebris, new Asteroid(astExploded, new Point(astExploded.getXcoord(i), astExploded.getYcoord(i)), new Point(astExploded.getXcoord(i+1), astExploded.getYcoord(i+1)))));
+                    }
+                    tupMarkForAdds.add(new Tuple(CommandCenter.movDebris, new Asteroid(astExploded, new Point(astExploded.getXcoord(num-2), astExploded.getYcoord(num-2)), new Point(astExploded.getXcoord(num-1), astExploded.getYcoord(num-1)))));
+                }
+            }
 			//remove the original Foe	
 			tupMarkForRemovals.add(new Tuple(CommandCenter.movFoes, movFoe));
 		
@@ -287,7 +306,7 @@ public class Game implements Runnable, KeyListener {
 	private void spawnNewShipFloater() {
 		//make the appearance of power-up dependent upon ticks and levels
 		//the higher the level the more frequent the appearance
-		if (nTick % (SPAWN_NEW_SHIP_FLOATER - nLevel * 7) == 0) {
+		if (nTick % (SPAWN_NEW_SHIP_FLOATER - nLevel * 500) == 0) {
 			CommandCenter.movFloaters.add(new NewShipFloater());
 		}
 	}
@@ -333,7 +352,6 @@ public class Game implements Runnable, KeyListener {
 		if (isLevelClear() ){
 			if (CommandCenter.getFalcon() !=null)
 				CommandCenter.getFalcon().setProtected(true);
-			
 			spawnAsteroids(CommandCenter.getLevel() + 2);
 			CommandCenter.setLevel(CommandCenter.getLevel() + 1);
 
@@ -381,6 +399,11 @@ public class Game implements Runnable, KeyListener {
 				if (!CommandCenter.isPaused())
 					clpThrust.loop(Clip.LOOP_CONTINUOUSLY);
 				break;
+            case DOWN:
+                fal.thrustOppositeOn();
+                if (!CommandCenter.isPaused())
+                    clpThrust.loop(Clip.LOOP_CONTINUOUSLY);
+                break;
 			case LEFT:
 				fal.rotateLeft();
 				break;
@@ -403,7 +426,7 @@ public class Game implements Runnable, KeyListener {
 	public void keyReleased(KeyEvent e) {
 		Falcon fal = CommandCenter.getFalcon();
 		int nKey = e.getKeyCode();
-		 System.out.println(nKey);
+        System.out.println(nKey);
 
 		if (fal != null) {
 			switch (nKey) {
@@ -428,7 +451,10 @@ public class Game implements Runnable, KeyListener {
 				fal.thrustOff();
 				clpThrust.stop();
 				break;
-				
+            case DOWN:
+                fal.thrustOppositeOff();
+                clpThrust.stop();
+                break;
 			case MUTE:
 				if (!bMuted){
 					stopLoopingSounds(clpMusicBackground);

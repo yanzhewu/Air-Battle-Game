@@ -265,19 +265,12 @@ public abstract class Sprite implements Movable {
 		setLengths(convertToPolarLens(pntCs));
 
 	}
-	
 
-
-
-
-	
     public void draw(Graphics g) {
         nXCoords = new int[dDegrees.length];
         nYCoords = new int[dDegrees.length];
         //need this as well
         pntCoords = new Point[dDegrees.length];
-        
-
         for (int nC = 0; nC < dDegrees.length; nC++) {
             nXCoords[nC] =    (int) (getCenter().x + getRadius() 
                             * dLengths[nC] 
@@ -290,12 +283,6 @@ public abstract class Sprite implements Movable {
             //need this line of code to create the points which we will need for debris
             pntCoords[nC] = new Point(nXCoords[nC], nYCoords[nC]);
         }
-        
-        
-        
-
-		
-        
         g.setColor(getColor());
         g.drawPolygon(getXcoords(), getYcoords(), dDegrees.length);
     }
@@ -316,6 +303,7 @@ public abstract class Sprite implements Movable {
 
 
 	public void expire() {
+
 	}
 
 	public int getFadeValue() {

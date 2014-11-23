@@ -1,6 +1,7 @@
 package edu.uchicago.cs.java.finalproject.game.model;
 
 
+import java.awt.*;
 import java.util.Arrays;
 
 import edu.uchicago.cs.java.finalproject.controller.Game;
@@ -52,9 +53,44 @@ public class Asteroid extends Sprite {
 		
 
 	}
-	
 
-	
+	public Asteroid(Asteroid astExploded,Point X,Point Y){
+        super();
+        setDim(Game.DIM);
+        setColor(Color.red);
+        setCenter(new Point(Game.R.nextInt(Game.DIM.width),
+                Game.R.nextInt(Game.DIM.height)));
+        int nSpin = Game.R.nextInt(10);
+        if (nSpin % 2 == 0)
+            nSpin = -nSpin;
+        setSpin(nSpin);
+
+        int x = (int)(astExploded.getCenter().getX());
+        int y = (int)(astExploded.getCenter().getY());
+
+        int nDX = (int)(astExploded.getCenter().getX()-(X.getX()+Y.getX())/2);
+        setDeltaX(nDX);
+
+        //random delta-y
+        int nDY = (int)(astExploded.getCenter().getY()-(X.getY()+Y.getY())/2);
+        setDeltaY(nDY);
+        setExpire(6);
+        assignRandomShape();
+
+        //an nSize of zero is a big asteroid
+        //a nSize of 1 or 2 is med or small asteroid respectively
+
+        setRadius(RAD / (30));
+
+        setCenter(new Point((int)(x+(X.getX()+Y.getX())/2)/2,(int)(y+(X.getY()+Y.getY())/2)/2));
+    }
+
+    public void expire(){
+        if (getExpire() == 0)
+            CommandCenter.movDebris.remove(this);
+        else
+            setExpire(getExpire() - 1);
+    }
 	
 	public Asteroid(Asteroid astExploded){
 	
@@ -63,36 +99,32 @@ public class Asteroid extends Sprite {
 		super();
 		
 		int  nSizeNew =	astExploded.getSize() + 1;
-		
-		
-		//the spin will be either plus or minus 0-9
-		int nSpin = Game.R.nextInt(10);
-		if(nSpin %2 ==0)
-			nSpin = -nSpin;
-		setSpin(nSpin);
-			
-		//random delta-x
-		int nDX = Game.R.nextInt(10 + nSizeNew*2);
-		if(nDX %2 ==0)
-			nDX = -nDX;
-		setDeltaX(nDX);
-		
-		//random delta-y
-		int nDY = Game.R.nextInt(10+ nSizeNew*2);
-		if(nDY %2 ==0)
-			nDY = -nDY;
-		setDeltaY(nDY);
-			
-		assignRandomShape();
-		
-		//an nSize of zero is a big asteroid
-		//a nSize of 1 or 2 is med or small asteroid respectively
 
-		setRadius(RAD/(nSizeNew * 2));
-		setCenter(astExploded.getCenter());
-		
-		
-		
+            //the spin will be either plus or minus 0-9
+            int nSpin = Game.R.nextInt(10);
+            if (nSpin % 2 == 0)
+                nSpin = -nSpin;
+            setSpin(nSpin);
+
+            //random delta-x
+            int nDX = Game.R.nextInt(10 + nSizeNew * 2);
+            if (nDX % 2 == 0)
+                nDX = -nDX;
+            setDeltaX(nDX);
+
+            //random delta-y
+            int nDY = Game.R.nextInt(10 + nSizeNew * 2);
+            if (nDY % 2 == 0)
+                nDY = -nDY;
+            setDeltaY(nDY);
+
+            assignRandomShape();
+
+            //an nSize of zero is a big asteroid
+            //a nSize of 1 or 2 is med or small asteroid respectively
+
+            setRadius(RAD / (nSizeNew * 2));
+            setCenter(astExploded.getCenter());
 
 	}
 	

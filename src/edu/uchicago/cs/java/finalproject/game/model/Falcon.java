@@ -16,12 +16,15 @@ public class Falcon extends Sprite {
 	
 	private final double THRUST = .65;
 
+
 	final int DEGREE_STEP = 7;
 	
 	private boolean bShield = false;
+    private boolean bFlameOpposite = false;
 	private boolean bFlame = false;
 	private boolean bProtected; //for fade in and out
-	
+
+    private boolean bThrustingOpposite = false;
 	private boolean bThrusting = false;
 	private boolean bTurningRight = false;
 	private boolean bTurningLeft = false;
@@ -97,6 +100,15 @@ public class Falcon extends Sprite {
 
 	public void move() {
 		super.move();
+        if (bThrustingOpposite){
+            bFlameOpposite = true;
+            double dAdjustX = Math.cos(Math.toRadians(getOrientation()))
+                    * THRUST;
+            double dAdjustY = Math.sin(Math.toRadians(getOrientation()))
+                    * THRUST;
+            setDeltaX(getDeltaX() - dAdjustX);
+            setDeltaY(getDeltaY() - dAdjustY);
+        }
 		if (bThrusting) {
 			bFlame = true;
 			double dAdjustX = Math.cos(Math.toRadians(getOrientation()))
@@ -133,6 +145,13 @@ public class Falcon extends Sprite {
 		bTurningRight = false;
 		bTurningLeft = false;
 	}
+
+    public void thrustOppositeOn() {bThrustingOpposite = true;}
+
+    public void thrustOppositeOff() {
+        bThrustingOpposite = false;
+        bFlameOpposite = false;
+    }
 
 	public void thrustOn() {
 		bThrusting = true;
@@ -215,7 +234,49 @@ public class Falcon extends Sprite {
 
 		} //end if flame
 
-		drawShipWithColor(g, colShip);
+
+        if (bFlameOpposite) {
+            g.setColor(colShip);
+            //the flame
+            for (int nC = 0; nC < FLAME.length; nC++) {
+                if (nC % 2 != 0) //odd
+                {
+                    pntFlames[nC] = new Point((int) (getCenter().x - 2
+                            * getRadius()
+                            * Math.sin(Math.toRadians(getOrientation())
+                            + FLAME[nC])), (int) (getCenter().y + 2
+                            * getRadius()
+                            * Math.cos(Math.toRadians(getOrientation())
+                            + FLAME[nC])));
+
+                } else //even
+                {
+                    pntFlames[nC] = new Point((int) (getCenter().x - getRadius()
+                            * 1.1
+                            * Math.sin(Math.toRadians(getOrientation())
+                            + FLAME[nC])),
+                            (int) (getCenter().y + getRadius()
+                                    * 1.1
+                                    * Math.cos(Math.toRadians(getOrientation())
+                                    + FLAME[nC])));
+
+                } //end even/odd else
+
+            } //end for loop
+
+            for (int nC = 0; nC < FLAME.length; nC++) {
+                nXFlames[nC] = pntFlames[nC].x;
+                nYFlames[nC] = pntFlames[nC].y;
+
+            } //end assign flame points
+
+            //g.setColor( Color.white );
+            g.fillPolygon(nXFlames, nYFlames, FLAME.length);
+
+        } //end if flame
+
+
+        drawShipWithColor(g, colShip);
 
 	} //end draw()
 

@@ -71,6 +71,16 @@ import edu.uchicago.cs.java.finalproject.game.model.Movable;
 			g.drawString("NO SCORE", nFontWidth, nFontHeight);
 		}
 	}
+
+    private void drawFalcons(Graphics g) {
+         g.setColor(Color.white);
+         g.setFont(fnt);
+         if (CommandCenter.getNumFalcons() != 0) {
+             g.drawString("FALCONS :  " + CommandCenter.getNumFalcons(), nFontWidth, nFontHeight+15);
+         } else {
+             g.drawString("NO FALCONS", nFontWidth, nFontHeight+15);
+         }
+    }
 	
 	@SuppressWarnings("unchecked")
 	public void update(Graphics g) {
@@ -85,7 +95,7 @@ import edu.uchicago.cs.java.finalproject.game.model.Movable;
 		grpOff.fillRect(0, 0, Game.DIM.width, Game.DIM.height);
 
 		drawScore(grpOff);
-		
+        drawFalcons(grpOff);
 		if (!CommandCenter.isPlaying()) {
 			displayTextOnScreen();
 		} else if (CommandCenter.isPaused()) {
