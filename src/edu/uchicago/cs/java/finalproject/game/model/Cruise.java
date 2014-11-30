@@ -69,6 +69,53 @@ public class Cruise extends Sprite {
 
 	}
 
+    public Cruise(Falcon falcon,Point X,Point Y){
+        super();
+
+        //defined the points on a cartesean grid
+        ArrayList<Point> pntCs = new ArrayList<Point>();
+
+
+        pntCs.add(new Point(0, 5));
+        pntCs.add(new Point(1, 3));
+        pntCs.add(new Point(1, 0));
+        pntCs.add(new Point(6, 0));
+        pntCs.add(new Point(6, -1));
+        pntCs.add(new Point(1, -1));
+        pntCs.add(new Point(1, -2));
+
+        pntCs.add(new Point(-1, -2));
+        pntCs.add(new Point(-1, -1));
+        pntCs.add(new Point(-6, -1));
+        pntCs.add(new Point(-6, 0));
+        pntCs.add(new Point(-1, 0));
+        pntCs.add(new Point(-1, 3));
+        assignPolarPoints(pntCs);
+
+
+        //these are alt points
+        ArrayList<Point> pntAs = new ArrayList<Point>();
+        pntAs.add(new Point(0, 5));
+        pntAs.add(new Point(1, 3));
+        pntAs.add(new Point(1, -2));
+        pntAs.add(new Point(-1, -2));
+        pntAs.add(new Point(-1, 3));
+        assignPolorPointsAlts(pntAs);
+
+        //a cruis missile expires after 25 frames
+        setExpire(MAX_EXPIRE);
+        setRadius(20);
+
+        //everything is relative to the falcon ship that fired the bullet
+        setDeltaX((int)(falcon.getCenter().getX()-(X.getX()+Y.getX())/2));
+        setDeltaY((int)(falcon.getCenter().getY()-(X.getX()+Y.getY())/2));
+        setCenter(falcon.getCenter());
+
+        //set the bullet orientation to the falcon (ship) orientation
+        //setOrientation(falcon.getOrientation());
+        setColor(Color.RED);
+    }
+
 	
 	//assign for alt imag
 	protected void assignPolorPointsAlts(ArrayList<Point> pntCs) {
@@ -96,7 +143,7 @@ public class Cruise extends Sprite {
 		
 		if (getExpire() < MAX_EXPIRE -5)
 			super.draw(g);
-		else{ 
+		else{
 			drawAlt(g);
 		}
 		

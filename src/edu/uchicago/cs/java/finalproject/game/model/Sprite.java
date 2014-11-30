@@ -76,8 +76,6 @@ public abstract class Sprite implements Movable {
 		setColor(Color.white);
 		setCenter(new Point(Game.R.nextInt(Game.DIM.width),
 				Game.R.nextInt(Game.DIM.height)));
-
-
 	}
 
 	public void setExpire(int n) {

@@ -4,16 +4,19 @@ package edu.uchicago.cs.java.finalproject.game.model;
 import java.awt.*;
 import java.util.Arrays;
 
+import com.sun.corba.se.impl.orbutil.graph.Graph;
 import edu.uchicago.cs.java.finalproject.controller.Game;
 
 public class Asteroid extends Sprite {
 
 	
 	private int nSpin;
-	
+	private Color color;
 	//radius of a large asteroid
 	private final int RAD = 100;
-	
+    private Point[] pntCoords; //an array of points used to draw polygon
+    private int[] nXCoords;
+    private int[] nYCoords;
 	//nSize determines if the Asteroid is Large (0), Medium (1), or Small (2)
 	//when you explode a Large asteroid, you should spawn 2 or 3 medium asteroids
 	//same for medium asteroid, you should spawn small asteroids
@@ -57,7 +60,7 @@ public class Asteroid extends Sprite {
 	public Asteroid(Asteroid astExploded,Point X,Point Y){
         super();
         setDim(Game.DIM);
-        setColor(Color.red);
+        setColor(Color.yellow);
         setCenter(new Point(Game.R.nextInt(Game.DIM.width),
                 Game.R.nextInt(Game.DIM.height)));
         int nSpin = Game.R.nextInt(10);
@@ -74,13 +77,13 @@ public class Asteroid extends Sprite {
         //random delta-y
         int nDY = (int)(astExploded.getCenter().getY()-(X.getY()+Y.getY())/2);
         setDeltaY(nDY);
-        setExpire(6);
+        setExpire(12);
         assignRandomShape();
-
+        setFadeValue(0);
         //an nSize of zero is a big asteroid
         //a nSize of 1 or 2 is med or small asteroid respectively
 
-        setRadius(RAD / (30));
+        setRadius(RAD / (10));
 
         setCenter(new Point((int)(x+(X.getX()+Y.getX())/2)/2,(int)(y+(X.getY()+Y.getY())/2)/2));
     }
@@ -142,6 +145,9 @@ public class Asteroid extends Sprite {
 			case 25:
 				nReturn= 2;
 				break;
+            default:
+                nReturn= 3;
+                break;
 		}
 		return nReturn;
 		
@@ -202,5 +208,32 @@ public class Asteroid extends Sprite {
 		setLengths(dLengths);
 
 	  }
+
+
+    public void draw(Graphics g) {
+        if(this.getSize() == 3){
+            if (getFadeValue() == 255) {
+                color = Color.BLACK;
+                setColor(color);
+                //g.fillPolygon(getXcoords(), getYcoords(), dDegrees.length);
+            } else {
+                color = new Color(0, 255/24*this.getExpire(), 255/12*this.getExpire());
+                setColor(color);
+                //g.fillPolygon(getXcoords(), getYcoords(), dDegrees.length);
+            }}
+        super.draw(g);
+        //fill this polygon (with whatever color it has)
+        if(this.getSize() == 3){
+        g.fillPolygon(getXcoords(), getYcoords(), dDegrees.length);
+            g.setColor(Color.BLACK);
+            g.drawPolygon(getXcoords(), getYcoords(), dDegrees.length);
+        }
+        //now draw a white border
+        else{
+        g.setColor(Color.WHITE);
+        g.drawPolygon(getXcoords(), getYcoords(), dDegrees.length);}
+    }
+
+
 
 }

@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import edu.uchicago.cs.java.finalproject.controller.Game;
+import edu.uchicago.cs.java.finalproject.sounds.Sound;
 
 
 public class Falcon extends Sprite {
@@ -115,8 +116,8 @@ public class Falcon extends Sprite {
 					* THRUST;
 			double dAdjustY = Math.sin(Math.toRadians(getOrientation()))
 					* THRUST;
-			setDeltaX(getDeltaX() + dAdjustX);
-			setDeltaY(getDeltaY() + dAdjustY);
+  			setDeltaX(getDeltaX() + dAdjustX);
+  			setDeltaY(getDeltaY() + dAdjustY);
 		}
 		if (bTurningLeft) {
 
@@ -171,9 +172,10 @@ public class Falcon extends Sprite {
 	}
 
 	public void draw(Graphics g) {
+        Color colShip;
 
 		//does the fading at the beginning or after hyperspace
-		Color colShip;
+//		Color colShip;
 		if (getFadeValue() == 255) {
 			colShip = Color.white;
 		} else {
@@ -181,17 +183,29 @@ public class Falcon extends Sprite {
 					getFadeValue(), 175), getFadeValue());
 		}
 
-//		//shield on
-//		if (bShield && nShield > 0) {
-//
-//			setShield(getShield() - 1);
-//
-//			g.setColor(Color.cyan);
-//			g.drawOval(getCenter().x - getRadius(),
-//					getCenter().y - getRadius(), getRadius() * 2,
-//					getRadius() * 2);
-//
-//		} //end if shield
+		//shield on
+		if (bShield && nShield > 0) {
+
+			setShield(getShield() - 1);
+
+			g.setColor(Color.GREEN);
+			g.drawOval(getCenter().x - getRadius(),
+					getCenter().y - getRadius(), getRadius() * 2,
+					getRadius() * 2);
+
+		} //end if shield
+
+        if (bShield == true && nShield > 0){
+            colShip = Color.GREEN;
+
+        }else{
+            if(nShield == 0){
+                bShield = false;
+                colShip = Color.WHITE;
+                //Sound.playSound("ShieldOff.wav");
+            }
+        }
+        nShield--;
 
 		//thrusting
 		if (bFlame) {
@@ -309,10 +323,16 @@ public class Falcon extends Sprite {
 			setFadeValue(0);
 		}
 		bProtected = bParam;
-	}	
+	}
+
+    public void setColor(Graphics g,Color color){
+        g.setColor(color);
+    }
 
 	public boolean getProtected() {return bProtected;}
-	public void setShield(int n) {nShield = n;}
+	public void setShield(int n) {nShield = n;;}
 	public int getShield() {return nShield;}	
-	
+	public void ShieldOn(){bShield = true;setShield(500);}
+    public void ShieldOff(){bShield = false;setProtected(false);}
+    public boolean getBShield(){return bShield;};
 } //end class

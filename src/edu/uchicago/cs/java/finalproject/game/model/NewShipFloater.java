@@ -65,6 +65,58 @@ public class NewShipFloater extends Sprite {
 
 	}
 
+    public NewShipFloater(Movable movable) {
+
+        super();
+
+        ArrayList<Point> pntCs = new ArrayList<Point>();
+        // top of ship
+        pntCs.add(new Point(5, 5));
+        pntCs.add(new Point(4,0));
+        pntCs.add(new Point(5, -5));
+        pntCs.add(new Point(0,-4));
+        pntCs.add(new Point(-5, -5));
+        pntCs.add(new Point(-4,0));
+        pntCs.add(new Point(-5, 5));
+        pntCs.add(new Point(0,4));
+
+        assignPolarPoints(pntCs);
+
+        setExpire(250);
+        setRadius(50);
+        setColor(Color.BLUE);
+
+
+        int nX = Game.R.nextInt(10);
+        int nY = Game.R.nextInt(10);
+        int nS = Game.R.nextInt(5);
+
+        //set random DeltaX
+        if (nX % 2 == 0)
+            setDeltaX(nX);
+        else
+            setDeltaX(-nX);
+
+        //set rnadom DeltaY
+        if (nY % 2 == 0)
+            setDeltaX(nY);
+        else
+            setDeltaX(-nY);
+
+        //set random spin
+        if (nS % 2 == 0)
+            setSpin(nS);
+        else
+            setSpin(-nS);
+
+        //random point on the screen
+        setCenter(movable.getCenter());
+
+        //random orientation
+        setOrientation(Game.R.nextInt(360));
+
+    }
+
 	public void move() {
 		super.move();
 
