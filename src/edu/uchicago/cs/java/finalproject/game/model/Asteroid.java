@@ -83,7 +83,7 @@ public class Asteroid extends Sprite {
         //an nSize of zero is a big asteroid
         //a nSize of 1 or 2 is med or small asteroid respectively
 
-        setRadius(RAD / (10));
+        setRadius(RAD / (9));
 
         setCenter(new Point((int)(x+(X.getX()+Y.getX())/2)/2,(int)(y+(X.getY()+Y.getY())/2)/2));
     }
@@ -213,11 +213,11 @@ public class Asteroid extends Sprite {
     public void draw(Graphics g) {
         if(this.getSize() == 3){
             if (getFadeValue() == 255) {
-                color = Color.BLACK;
+                color = Color.BLUE;
                 setColor(color);
                 //g.fillPolygon(getXcoords(), getYcoords(), dDegrees.length);
             } else {
-                color = new Color(0, 255/24*this.getExpire(), 255/12*this.getExpire());
+                color = new Color(255/12*this.getExpire(), 0, 255 - 255/24*this.getExpire());
                 setColor(color);
                 //g.fillPolygon(getXcoords(), getYcoords(), dDegrees.length);
             }}
@@ -230,8 +230,12 @@ public class Asteroid extends Sprite {
         }
         //now draw a white border
         else{
-        g.setColor(Color.WHITE);
-        g.drawPolygon(getXcoords(), getYcoords(), dDegrees.length);}
+            g.setColor(new Color(153,76,28));
+        g.drawPolygon(getXcoords(), getYcoords(), dDegrees.length);
+            g.setColor(new Color(153,76,28));
+            g.fillPolygon(getXcoords(),getYcoords(),dDegrees.length);
+        }
+
     }
 
 

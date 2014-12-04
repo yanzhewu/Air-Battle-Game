@@ -34,7 +34,9 @@ public class Game implements Runnable, KeyListener {
 	private ArrayList<Tuple> tupMarkForAdds;
 	private boolean bMuted = true;
 	private boolean keepFire = false;
-
+    private boolean circleWeapon = false;
+    private int circleWeaponTime = 0;
+    private boolean ifNucler = false;
 	private final int PAUSE = 80, // p key
 			QUIT = 81, // q key
 			LEFT = 37, // rotate left; left arrow
@@ -55,9 +57,11 @@ public class Game implements Runnable, KeyListener {
 	private Clip clpMusicBackground;
     private Clip clpMusicUFO;
 
+
 	private static final int SPAWN_NEW_SHIP_FLOATER = 1200;
     private static final int SPAWN_SHIELD_FLOATER = 800;
-
+    private static final int SPAWN_CircleWeapon_FLOATER = 1000;
+    private static final int SPAWN_NuclearWeapon_FLOATER = 1000;
 
 
 	// ===============================================
@@ -121,6 +125,8 @@ public class Game implements Runnable, KeyListener {
 			tick();
 			spawnNewShipFloater();
             spawnShieldFloater();
+            spawnCircleWeaponFloater();
+            spawnNuclearWeaponFloater();
 			gmpPanel.update(gmpPanel.getGraphics()); // update takes the graphics context we must 
 														// surround the sleep() in a try/catch block
 														// this simply controls delay time between 
@@ -153,9 +159,20 @@ public class Game implements Runnable, KeyListener {
     public void keepFire(){
         if(keepFire){
             if(getTick() % 2 == 0){
-                CommandCenter.movFriends.add(new Bullet(CommandCenter.getFalcon()));
-                //Sound.playSound("laser.wav");
-                Sound.playSound("Fire.wav");
+                //CommandCenter.movFriends.add(new Bullet(CommandCenter.getFalcon()));
+                System.out.println(CommandCenter.isbCircleWeapon());
+                if(CommandCenter.isbCircleWeapon()) {
+                    if(getTick() - CommandCenter.getCircleWeaponTime() < 100){
+                    CircleWeapon circleWeapon1 = new CircleWeapon();
+                    }
+                    else{
+                        CommandCenter.setbCircleWeapon(false);
+                    }
+                }
+                else{
+                    CommandCenter.movFriends.add(new Bullet(CommandCenter.getFalcon()));
+                    Sound.playSound("Fire.wav");
+                }
             }
         }
     }
@@ -267,6 +284,18 @@ public class Game implements Runnable, KeyListener {
                     if(movFloater instanceof  ShieldFloater){
                         CommandCenter.getFalcon().ShieldOn();
                     }
+                    if(movFloater instanceof CircleWeaponFloater){
+                        CommandCenter.setbCircleWeapon(true);
+                        CommandCenter.setCircleWeaponTime(getTick());
+                    }
+                    if(movFloater instanceof  NuclearWeaponFloater){
+
+                        for(Movable movFoe : CommandCenter.movFoes){
+                            ifNucler = true;
+                            killFoe(movFoe);
+                        }
+
+                    }
                     tupMarkForRemovals.add(new Tuple(CommandCenter.movFloaters, movFloater));
 					Sound.playSound("pacman_eatghost.wav");
 				}
@@ -325,6 +354,11 @@ public class Game implements Runnable, KeyListener {
 		//not an asteroid
         else{
             if(movFoe instanceof UFO){
+                if(ifNucler){
+                    tupMarkForRemovals.add(new Tuple(CommandCenter.movFoes,movFoe));
+                    Sound.playSound("Bomb.wav");
+                    ifNucler = false;
+                }
                 if(((UFO) movFoe).getnLife() > 1){
                     ((UFO) movFoe).setnLife(((UFO) movFoe).getnLife() - 1);
                 }
@@ -336,7 +370,17 @@ public class Game implements Runnable, KeyListener {
                             CommandCenter.movFloaters.add(new ShieldFloater(movFoe));
                         }
                         else{
-                            CommandCenter.movFloaters.add(new NewShipFloater(movFoe));
+                            if(getTick() % 5 == 0){
+                                CommandCenter.movFloaters.add(new NewShipFloater(movFoe));
+                            }
+                            else{
+                                if(getTick() % 7 == 0){
+                                    CommandCenter.movFloaters.add(new NewShipFloater());
+                                }else {
+                                CommandCenter.movFloaters.add(new CircleWeaponFloater(movFoe));
+                                }
+                            }
+
                         }
                     }
                 }
@@ -384,7 +428,17 @@ public class Game implements Runnable, KeyListener {
         }
     }
 
+    private void spawnCircleWeaponFloater(){
+        if(nTick % (SPAWN_CircleWeapon_FLOATER - nLevel *300) == 0){
+            CommandCenter.movFloaters.add(new CircleWeaponFloater());
+        }
+    }
 
+    private void spawnNuclearWeaponFloater(){
+        if(nTick % (SPAWN_NuclearWeapon_FLOATER - nLevel *300) == 0){
+            CommandCenter.movFloaters.add(new NuclearWeaponFloater());
+        }
+    }
 
 	// Called when user presses 's'
 	private void startGame() {
@@ -431,7 +485,7 @@ public class Game implements Runnable, KeyListener {
 		
 		boolean bAsteroidFree = true;
 		for (Movable movFoe : CommandCenter.movFoes) {
-			if (movFoe instanceof Asteroid){
+			if (movFoe instanceof Asteroid || movFoe instanceof UFO){
 				bAsteroidFree = false;
 				break;
 			}
@@ -447,7 +501,8 @@ public class Game implements Runnable, KeyListener {
 			if (CommandCenter.getFalcon() !=null){
 				CommandCenter.getFalcon().setProtected(true);
             }
-			spawnAsteroids(CommandCenter.getLevel());
+            spawnUFOs((CommandCenter.getLevel()+1)%3);
+			spawnAsteroids(CommandCenter.getLevel()%4);
 			CommandCenter.setLevel(CommandCenter.getLevel() + 1);
             if(CommandCenter.getLevel() == 1){
                 spawnAsteroids(2);
@@ -495,7 +550,7 @@ public class Game implements Runnable, KeyListener {
                 case FIRE:
                     //CommandCenter.movFriends.add(new Bullet(fal));
                     //Sound.playSound("laser.wav");
-                    Sound.playSound("Fire.wav");
+                    //Sound.playSound("Fire.wav");
                     keepFire = true;
                     break;
 
@@ -568,7 +623,7 @@ public class Game implements Runnable, KeyListener {
 //                    CommandCenter.movFriends.add(new Cruise(fal, new Point(fal.getXcoord(i), fal.getYcoord(i)), new Point(fal.getXcoord(i+1), fal.getYcoord(i+1))));
 //                }
 				//CommandCenter.movFriends.add(new Cruise(fal));
-                spawnMissiles(3);
+                spawnMissiles(5);
                 Sound.playSound("Missile.wav");
 //				Sound.playSound("laser.wav");
 				break;

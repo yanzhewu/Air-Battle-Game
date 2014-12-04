@@ -14,8 +14,26 @@ public class CommandCenter {
 	private static Falcon falShip;
 	private static boolean bPlaying;
 	private static boolean bPaused;
-	
-	// These ArrayLists are thread-safe
+    private static boolean bCircleWeapon;
+    private static int circleWeaponTime;
+
+    public static int getCircleWeaponTime() {
+        return circleWeaponTime;
+    }
+
+    public static void setCircleWeaponTime(int circleWeaponTime) {
+        CommandCenter.circleWeaponTime = circleWeaponTime;
+    }
+
+    public static boolean isbCircleWeapon() {
+        return bCircleWeapon;
+    }
+
+    public static void setbCircleWeapon(boolean bCircleWeapon) {
+        CommandCenter.bCircleWeapon = bCircleWeapon;
+    }
+
+    // These ArrayLists are thread-safe
 	public static CopyOnWriteArrayList<Movable> movDebris = new CopyOnWriteArrayList<Movable>();
 	public static CopyOnWriteArrayList<Movable> movFriends = new CopyOnWriteArrayList<Movable>();
 	public static CopyOnWriteArrayList<Movable> movFoes = new CopyOnWriteArrayList<Movable>();

@@ -9,9 +9,12 @@ import java.awt.Image;
 import java.awt.Panel;
 import java.awt.Point;
 import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.IOException;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import javax.swing.JFrame;
+import javax.imageio.ImageIO;
+import javax.swing.*;
 
 
 import edu.uchicago.cs.java.finalproject.controller.Game;
@@ -38,7 +41,8 @@ import edu.uchicago.cs.java.finalproject.game.model.Movable;
 	private int nFontWidth;
 	private int nFontHeight;
 	private String strDisplay = "";
-	
+    private Image backgroundImage = null;
+    private JPanel panel1;
 
 	// ==============================================================
 	// CONSTRUCTOR 
@@ -46,7 +50,10 @@ import edu.uchicago.cs.java.finalproject.game.model.Movable;
 	
 	public GamePanel(Dimension dim){
 	    gmf = new GameFrame();
+        //panel1 = new JPanel();
 		gmf.getContentPane().add(this);
+        //panel1.add(this);
+
 		gmf.pack();
 		initView();
 		
@@ -54,6 +61,7 @@ import edu.uchicago.cs.java.finalproject.game.model.Movable;
 		gmf.setTitle("Game Base");
 		gmf.setResizable(false);
 		gmf.setVisible(true);
+        ((JPanel) gmf.getContentPane()).setOpaque(false);
 		this.setFocusable(true);
 	}
 	
@@ -96,6 +104,7 @@ import edu.uchicago.cs.java.finalproject.game.model.Movable;
 	
 	@SuppressWarnings("unchecked")
 	public void update(Graphics g) {
+
 		if (grpOff == null || Game.DIM.width != dimOff.width
 				|| Game.DIM.height != dimOff.height) {
 			dimOff = Game.DIM;
@@ -103,8 +112,10 @@ import edu.uchicago.cs.java.finalproject.game.model.Movable;
 			grpOff = imgOff.getGraphics();
 		}
 		// Fill in background with black.
-		grpOff.setColor(Color.black);
-		grpOff.fillRect(0, 0, Game.DIM.width, Game.DIM.height);
+		//grpOff.setColor(Color.black);
+		//grpOff.fillRect(0, 0, Game.DIM.width, Game.DIM.height);
+        loadRecources();
+        grpOff.drawImage(backgroundImage, 0, 0, this);
 
 		drawScore(grpOff);
         drawFalcons(grpOff);
@@ -136,7 +147,12 @@ import edu.uchicago.cs.java.finalproject.game.model.Movable;
 			}
 		}
 		//draw the double-Buffered Image to the graphics context of the panel
-		g.drawImage(imgOff, 0, 0, this);
+
+		//g.drawImage(imgOff, 0, 0, this);
+        loadRecources();
+
+        //g.drawImage(backgroundImage, 0, 0, panel1);
+        g.drawImage(imgOff, 0, 0, this);
 	} 
 
 
@@ -237,12 +253,39 @@ import edu.uchicago.cs.java.finalproject.game.model.Movable;
 				(Game.DIM.width - fmt.stringWidth(strDisplay)) / 2, Game.DIM.height / 4
 						+ nFontHeight + 280);
 
-		strDisplay = "'Numeric-Enter' for Hyperspace";
-		grpOff.drawString(strDisplay,
-				(Game.DIM.width - fmt.stringWidth(strDisplay)) / 2, Game.DIM.height / 4
-						+ nFontHeight + 320);
+//		strDisplay = "'Numeric-Enter' for Hyperspace";
+//		grpOff.drawString(strDisplay,
+//				(Game.DIM.width - fmt.stringWidth(strDisplay)) / 2, Game.DIM.height / 4
+//						+ nFontHeight + 320);
 	}
 	
 	public GameFrame getFrm() {return this.gmf;}
-	public void setFrm(GameFrame frm) {this.gmf = frm;}	
-}
+	public void setFrm(GameFrame frm) {this.gmf = frm;}
+
+     public void loadRecources()
+     {
+         if(backgroundImage == null)
+         {
+             try
+             {
+                 backgroundImage = ImageIO.read(new File("src/edu/uchicago/cs/java/finalproject/images/Starsinthesky.jpg"));
+             } catch (IOException e)
+             {
+                 System.out.println("No image");
+                 JOptionPane.showMessageDialog(this, "Can't find image!", "file not found", JOptionPane.ERROR_MESSAGE);
+             }
+         }
+     }
+
+     @Override
+     public void paint(Graphics g) {
+         //super.paint(g);
+         loadRecources();
+         if(backgroundImage != null)
+         {
+             g.drawImage(backgroundImage, 0, 0, this);
+         }
+     }
+
+
+ }

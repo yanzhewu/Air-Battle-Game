@@ -15,18 +15,14 @@ public class ShieldFloater extends Sprite {
 
         super();
 
-//        ArrayList<Point> pntCs = new ArrayList<Point>();
-//        // top of ship
-//        pntCs.add(new Point(5, 5));
-//        //pntCs.add(new Point(4,0));
-//        pntCs.add(new Point(5, -5));
-//        //pntCs.add(new Point(0,-4));
-//        pntCs.add(new Point(-5, -5));
-//        //pntCs.add(new Point(-4,0));
-//        pntCs.add(new Point(-5, 5));
-        //pntCs.add(new Point(0,4));
+        ArrayList<Point> pntCs = new ArrayList<Point>();
+        pntCs.add(new Point(-1, 1));
+        pntCs.add(new Point(1, 1));
+        pntCs.add(new Point(1, 0));
+        pntCs.add(new Point(0, -1));
+        pntCs.add(new Point(-1,0));
 
-//        assignPolarPoints(pntCs);
+        assignPolarPoints(pntCs);
 
 
         setExpire(250);
@@ -67,21 +63,16 @@ public class ShieldFloater extends Sprite {
 
     public ShieldFloater(Movable movable) {
 
-        super();
+        //super();
 
-//        ArrayList<Point> pntCs = new ArrayList<Point>();
-//        // top of ship
-//        pntCs.add(new Point(5, 5));
-//        //pntCs.add(new Point(4,0));
-//        pntCs.add(new Point(5, -5));
-//        //pntCs.add(new Point(0,-4));
-//        pntCs.add(new Point(-5, -5));
-//        //pntCs.add(new Point(-4,0));
-//        pntCs.add(new Point(-5, 5));
-        //pntCs.add(new Point(0,4));
+        ArrayList<Point> pntCs = new ArrayList<Point>();
+        pntCs.add(new Point(-1, 1));
+        pntCs.add(new Point(1, 1));
+        pntCs.add(new Point(1, 0));
+        pntCs.add(new Point(0, -1));
+        pntCs.add(new Point(-1,0));
 
-//        assignPolarPoints(pntCs);
-
+        assignPolarPoints(pntCs);
 
         setExpire(250);
         setRadius(50);
@@ -144,17 +135,21 @@ public class ShieldFloater extends Sprite {
 
     @Override
     public void draw(Graphics g) {
+        super.draw(g);
+        g.setColor(new Color(178,255,102));
+        g.drawPolygon(getXcoords(), getYcoords(), dDegrees.length);
         //super.draw(g);
-        g.setColor(Color.GREEN);
-        g.drawOval(getCenter().x - getRadius(),
-                getCenter().y - getRadius(), getRadius() * 2,
-                getRadius() * 2);
+
+        //g.drawPolygon(getXcoords(), getYcoords(), dDegrees.length);
+//        g.drawOval(getCenter().x - getRadius(),
+//                getCenter().y - getRadius(), getRadius() * 2,
+//                getRadius() * 2);
         //fill this polygon (with whatever color it has)
-        //g.fillPolygon(getXcoords(), getYcoords(), dDegrees.length);
+        g.fillPolygon(getXcoords(), getYcoords(), dDegrees.length);
         //now draw a white border
-        g.fillOval(getCenter().x - getRadius(),
-                getCenter().y - getRadius(), getRadius() * 2,
-                getRadius() * 2);
+//        g.fillOval(getCenter().x - getRadius(),
+//                getCenter().y - getRadius(), getRadius() * 2,
+//                getRadius() * 2);
         //g.setColor(Color.WHITE);
         //g.drawPolygon(getXcoords(), getYcoords(), dDegrees.length);
     }
